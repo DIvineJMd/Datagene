@@ -2,11 +2,14 @@ package com.example.hackthon_datallm_ai.Model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.hackthon_datallm_ai.geminidatamanager.ChatUIEvent
+import com.example.hackthon_datallm_ai.geminidatamanager.ChatViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class ViewModelChat : ViewModel() {
+class ViewModelChat(private val chatviewModel: ChatViewModel) : ViewModel() {
     private var _database =""
     val database:String
         get() {
@@ -26,16 +29,19 @@ class ViewModelChat : ViewModel() {
         viewModelScope.launch {
             _conversation.emit(_conversation.value + myChat)
 
-//            delay(1000)
-//            _conversation.emit(_conversation.value + getBotreply // make function to get bot reply
+            delay(1000)
+            _conversation.emit(_conversation.value + getbotreply(msg)) // make function to get bot reply
+
         }
     }
-//    private fun getbotreply(): ChatUiModel.Message {
-//     // make reply
-//
-//        return ChatUiModel.Message(
-//            text = reply,
-//            author = ChatUiModel.Author.bot
-//        )
-//    }
+    private suspend fun getbotreply(msg: String): ChatUiModel.Message {
+        chatviewModel.onEvent(ChatUIEvent.UpdatePrompt(msg))
+        chatviewModel.onEvent(ChatUIEvent.SendPrompt(msg))
+        delay(3000)
+
+        return ChatUiModel.Message(
+            text = chatviewModel.responseMessage.value,
+            author = ChatUiModel.Author.bot
+        )
+    }
 }

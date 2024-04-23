@@ -60,7 +60,7 @@ dependencies {
 //    //noinspection UseTomlInstead
 //    implementation("com.google.firebase:firebase-analytics")
     implementation( "androidx.constraintlayout:constraintlayout-compose:1.0.1")
-
+    implementation("com.google.ai.client.generativeai:generativeai:0.1.2")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

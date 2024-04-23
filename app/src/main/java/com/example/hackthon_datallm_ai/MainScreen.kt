@@ -1,7 +1,9 @@
 package com.example.hackthon_datallm_ai
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,7 +51,7 @@ class MainScreen {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun MainUi(context: Context, navController: NavController,dataModelChat: ViewModelChat) {
+    fun MainUi(context: Context, navController: NavController, dataModelChat: ViewModelChat) {
         Scaffold(
             floatingActionButton = {
                 FloatingActionButton(onClick = { navController.navigate("input") }) {
@@ -113,7 +115,7 @@ class MainScreen {
                                     .fillMaxWidth()
                             )
                             {
-                                Row{
+                                Row {
                                     Image(
                                         modifier = Modifier
                                             .padding(8.dp)
@@ -122,11 +124,15 @@ class MainScreen {
                                         painter = painterResource(id = R.drawable.db),
                                         contentDescription = ""
                                     )
-                                    Button(onClick = {
-                                        dataModelChat.setdatabase(it)
-                                        navController.navigate("chat")
-                                    },
-                                        modifier = Modifier.padding(start = 5.dp).fillMaxWidth()) {
+                                    Button(
+                                        onClick = {
+                                            dataModelChat.setdatabase(it)
+                                            navController.navigate("chat")
+                                        },
+                                        modifier = Modifier
+                                            .padding(start = 5.dp)
+                                            .fillMaxWidth()
+                                    ) {
                                         Text(
                                             text = it,
                                             style = MaterialTheme.typography.bodyLarge,
@@ -137,12 +143,12 @@ class MainScreen {
                                                 .align(Alignment.CenterVertically) // Add padding for better spacing
                                         )
 
-
                                     }
                                 }
 
                             }
                         }
+
                     }
                 } else {
                     Text(
@@ -162,6 +168,16 @@ class MainScreen {
                             .offset(y = 300.dp)
                             .size(200.dp)
                     )
+                }
+                Button(onClick = {
+                    val dbHelper = DatabaseHelper(context)
+                    val contentValues = dbHelper.convertSqlToContentValues("INSERT INTO hospital (patient, room, discharge) VALUES ('John Doe', 101, 0)")
+//                    if (contentValues != null) {
+//                        dbHelper.insertData("hospital", contentValues)
+//                    }
+
+                }) {
+                    Text(text = "daal do")
                 }
             }
         }

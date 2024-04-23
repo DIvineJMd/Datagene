@@ -12,6 +12,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.hackthon_datallm_ai.Model.ViewModelChat
+import com.example.hackthon_datallm_ai.Model.ViewModelChatFactory
+import com.example.hackthon_datallm_ai.geminidatamanager.ChatViewModel
 import com.example.hackthon_datallm_ai.ui.theme.ChatScreen
 import com.example.hackthon_datallm_ai.ui.theme.Hackthon_DataLLM_AITheme
 import com.google.firebase.FirebaseApp
@@ -22,10 +24,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Hackthon_DataLLM_AITheme {
-
-
                 val navController = rememberNavController()
-                val viewModelChat:ViewModelChat=viewModel()
+                val chatViewModel: ChatViewModel = viewModel()
+                val viewModelChat: ViewModelChat = viewModel(
+                    factory = ViewModelChatFactory(chatViewModel)
+                )
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

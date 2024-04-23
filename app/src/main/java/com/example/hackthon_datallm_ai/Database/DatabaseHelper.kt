@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import java.util.Locale
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -84,9 +85,82 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         return tableNames
     }
-
     fun queryData(tableName: String, projection: Array<String>?, selection: String?, selectionArgs: Array<String>?, sortOrder: String?): Cursor? {
         val db = readableDatabase
         return db.query(tableName, projection, selection, selectionArgs, null, null, sortOrder)
     }
+
+
+    fun convertSqlToContentValues(sqlQuery: String): ContentValues? {
+        val contentValues = ContentValues()
+
+        // Detecting the type of SQL operation (INSERT, UPDATE, DELETE)
+        val operation = sqlQuery.substringBefore(" ").uppercase(Locale.ROOT)
+        println(operation)
+        return when (operation) {
+            "INSERT" -> {
+
+                convertInsertToContentValues(sqlQuery)
+            }
+            "UPDATE" -> convertUpdateToContentValues(sqlQuery)
+            else -> null
+        }
+    }
+    private fun convertInsertToContentValues(sqlQuery: String): ContentValues? {
+        val contentValues = ContentValues()
+
+        // Extracting table name
+        val tableNameRegex = "(?<=INSERT INTO )\\w+".toRegex()
+        val tableNameMatch = tableNameRegex.find(sqlQuery)
+        val tableName = tableNameMatch?.value ?: return null
+        println(tableName)
+
+        // Extracting key-value pairs
+        val valuesRegex = "(?<=\\()(.+?)(?=\\))".toRegex()
+        val valuesMatch = valuesRegex.find(sqlQuery)
+        val valuesStr = valuesMatch?.value ?: return null
+
+        val keyValuePairs = valuesStr.split(", ")
+        println(keyValuePairs)
+        for (keyValuePair in keyValuePairs) {
+            val splitPair = keyValuePair.split("=")
+            println(splitPair)
+            if (splitPair.size == 2) {
+                val key = splitPair[0].trim()
+                val value = splitPair[1].trim()
+                println(value)
+                contentValues.put(key, value)
+            }
+        }
+
+        return contentValues
+    }
+
+
+    private fun convertUpdateToContentValues(sqlQuery: String): ContentValues? {
+        val contentValues = ContentValues()
+
+        // Extracting table name
+        val tableNameRegex = "(?<=UPDATE )\\w+".toRegex()
+        val tableNameMatch = tableNameRegex.find(sqlQuery)
+        val tableName = tableNameMatch?.value ?: return null
+
+        // Extracting SET clause
+        val setClauseRegex = "(?<=SET ).+".toRegex()
+        val setClauseMatch = setClauseRegex.find(sqlQuery)
+        val setClause = setClauseMatch?.value ?: return null
+
+        val keyValuePairs = setClause.split(", ")
+        for (keyValuePair in keyValuePairs) {
+            val splitPair = keyValuePair.split("=")
+            if (splitPair.size == 2) {
+                val key = splitPair[0].trim()
+                val value = splitPair[1].trim()
+                contentValues.put(key, value)
+            }
+        }
+
+        return contentValues
+    }
+
 }
