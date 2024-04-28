@@ -115,22 +115,65 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         val tableName = tableNameMatch?.value ?: return null
         println(tableName)
 
-        // Extracting key-value pairs
-        val valuesRegex = "(?<=\\()(.+?)(?=\\))".toRegex()
-        val valuesMatch = valuesRegex.find(sqlQuery)
-        val valuesStr = valuesMatch?.value ?: return null
+        val s = sqlQuery
+        val n = s.length
+        println(s)
+        println(n)
+        var i = 0
+        var keyflag = true
+        var keystr = ""
+        var valuesstr = ""
 
-        val keyValuePairs = valuesStr.split(", ")
-        println(keyValuePairs)
-        for (keyValuePair in keyValuePairs) {
-            val splitPair = keyValuePair.split("=")
-            println(splitPair)
-            if (splitPair.size == 2) {
-                val key = splitPair[0].trim()
-                val value = splitPair[1].trim()
-                println(value)
-                contentValues.put(key, value)
+        while (i < n) {
+            if (s[i] == '(' && keyflag) {
+                i++
+                while (s[i] != ')') {
+                    keystr += s[i]
+                    i++
+                }
+                keyflag = false
+            } else if (s[i] == '(' && !keyflag) {
+                i++
+                while (s[i] != ')') {
+                    valuesstr += s[i]
+                    i++
+                }
+                keyflag = false
             }
+            i++
+        }
+
+        var k = 0
+        val keyarr = mutableListOf<String>()
+        while (k < keystr.length) {
+            var key = ""
+            while (k < keystr.length && keystr[k] != ',' ) {
+                key += keystr[k]
+                k++
+            }
+            k++
+            keyarr.add(key)
+            k++
+        }
+
+        var v = 0
+        val valarr = mutableListOf<String>()
+        while (v < valuesstr.length) {
+            var value = ""
+            while (v < valuesstr.length && valuesstr[v] != ',' ) {
+                value += valuesstr[v]
+                v++
+            }
+            v++
+            valarr.add(value)
+            v++
+        }
+
+        val mp = mutableMapOf<String, String>()
+        for (index in keyarr.indices) {
+            var key = keyarr[index];
+            var value = valarr[index];
+            contentValues.put(key, value)
         }
 
         return contentValues
