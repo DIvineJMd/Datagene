@@ -126,7 +126,7 @@ class MainScreen {
                                     )
                                     Button(
                                         onClick = {
-                                            dataModelChat.setdatabase(it)
+                                            dataModelChat.setDatabase(it)
                                             navController.navigate("chat")
                                         },
                                         modifier = Modifier

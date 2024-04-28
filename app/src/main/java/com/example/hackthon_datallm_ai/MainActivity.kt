@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
                             MainScreen().MainUi(context = applicationContext,navController,viewModelChat)
                         }
                         composable("chat"){
-                            ChatScreen(navController = navController, viewmodel = viewModelChat)
+                            ChatScreen(navController = navController, viewmodel = viewModelChat,chatViewModel)
                         }
                     }
                 }
