@@ -45,13 +45,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hackthon_datallm_ai.Database.DatabaseHelper
 import com.example.hackthon_datallm_ai.Model.ViewModelChat
+import com.example.hackthon_datallm_ai.geminidatamanager.ChatViewModel
 
 class MainScreen {
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun MainUi(context: Context, navController: NavController, dataModelChat: ViewModelChat) {
+    fun MainUi(context: Context, navController: NavController, dataModelChat: ViewModelChat,chatviewmodel: ChatViewModel) {
         Scaffold(
             floatingActionButton = {
                 FloatingActionButton(onClick = { navController.navigate("input") }) {
@@ -126,7 +127,8 @@ class MainScreen {
                                     )
                                     Button(
                                         onClick = {
-                                            dataModelChat.setdatabase(it)
+                                            chatviewmodel.setDatabase(it)
+                                            chatviewmodel.setattributes(DatabaseHelper(context).getTableAttributes(it))
                                             navController.navigate("chat")
                                         },
                                         modifier = Modifier

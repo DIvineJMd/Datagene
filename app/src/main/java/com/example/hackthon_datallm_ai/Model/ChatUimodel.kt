@@ -1,7 +1,9 @@
 package com.example.hackthon_datallm_ai.Model
 
+import kotlinx.coroutines.flow.StateFlow
+
 data class ChatUiModel(
-    val messages: List<Message>,
+    val messages: StateFlow<List<Message>>,
     val addressee: Author,
 ) {
     data class Message(

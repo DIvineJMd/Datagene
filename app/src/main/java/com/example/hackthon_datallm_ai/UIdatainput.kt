@@ -132,10 +132,11 @@ class UIdatainput( val context: Context,val navController: NavController) {
                         )
 
                         Row(horizontalArrangement = Arrangement.SpaceBetween) { // Input for Field Name
+
                             OutlinedTextField(
                                 modifier = Modifier
                                     .requiredWidth(150.dp)
-                                    .padding(3.dp),
+                                    .padding(5.dp),
                                 value = fieldName,
                                 onValueChange = { fieldName = it },
                                 label = { Text("Field Name") }
