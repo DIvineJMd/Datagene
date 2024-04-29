@@ -1,5 +1,6 @@
 package com.example.hackthon_datallm_ai.geminidatamanager
 
+import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ChatViewModel : ViewModel() {
+class ChatViewModel (private val context: Context) : ViewModel() {
     private var _database = "" //table name
 
     lateinit var _attributes: List<Pair<String, String>>
