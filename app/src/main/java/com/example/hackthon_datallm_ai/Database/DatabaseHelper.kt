@@ -5,6 +5,12 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import androidx.lifecycle.MutableLiveData
+import com.example.hackthon_datallm_ai.geminidatamanager.Chat
+import com.example.hackthon_datallm_ai.geminidatamanager.ChatState
+import com.example.hackthon_datallm_ai.geminidatamanager.Resource
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import java.util.Locale
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -110,29 +116,58 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
 
-    fun convertSqlToContentValues(sqlQuery: String): ContentValues? {
-        val contentValues = ContentValues()
+    fun convertSqlToContentValues(
+        sqlQuery: String,
+        dbHelper: DatabaseHelper,
+        _database: String,
+        _livechat: MutableLiveData<Resource<String>>,
+        _chatState: MutableStateFlow<ChatState>,
+        chat: Chat
+    ) {
+        var contentValues = ContentValues()
 
         // Detecting the type of SQL operation (INSERT, UPDATE, DELETE)
         val operation = sqlQuery.substringBefore(" ").uppercase(Locale.ROOT)
-        println(operation)
-        return when (operation) {
-            "INSERT" -> {
-
-                convertInsertToContentValues(sqlQuery)
+        if(operation=="INSERT") {
+                contentValues=convertInsertToContentValues(sqlQuery)
+            if(contentValues!=null){
+                dbHelper.insertData(_database,contentValues)
+                _livechat.value = Resource.Success("Data Inserted Successfully!")
+                _livechat.value = Resource.Stop()
+                _chatState.update {
+                    it.copy(
+                        chatList = it.chatList.toMutableList().apply {
+                            add(0, chat)
+                        }
+                    )
+                }
             }
-            "UPDATE" -> convertUpdateToContentValues(sqlQuery)
-//            "Delete" ->
-            else -> null
+            else{
+                _livechat.value = Resource.Success("Unsuccessfull Data Insertion :(")
+                _livechat.value = Resource.Stop()
+            }
+        }
+        else if(operation=="UPDATE"){
+            var values = emptyList<String>()
+            var clause = emptyList<String>()
+            var args = emptyList<String>()
+
+//            UPDATE student SET address = 'Earth-9907', age = 990 WHERE roll_no = 1;
+//            Table Name: student
+//                    Values: {'address': "'Earth-9907'", 'age': '990'}
+//            Where Clause: roll_no =
+//                    Where Args: ['1']
+
+//            dbHelper.updateData()
         }
     }
-    private fun convertInsertToContentValues(sqlQuery: String): ContentValues? {
+    private fun convertInsertToContentValues(sqlQuery: String): ContentValues {
         val contentValues = ContentValues()
 
         // Extracting table name
         val tableNameRegex = "(?<=INSERT INTO )\\w+".toRegex()
         val tableNameMatch = tableNameRegex.find(sqlQuery)
-        val tableName = tableNameMatch?.value ?: return null
+        val tableName = tableNameMatch?.value
         println(tableName)
 
         val s = sqlQuery
@@ -191,48 +226,52 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         val mp = mutableMapOf<String, String>()
         for (index in keyarr.indices) {
-            var key = keyarr[index];
-            var value = valarr[index];
+            var key = keyarr[index].trim('\'', '"')
+            var value = valarr[index].trim('\'', '"')
             contentValues.put(key, value)
         }
 
         return contentValues
     }
 
-    private fun convertUpdateToContentValues(sqlQuery: String): ContentValues? {
+    private fun convertUpdateToContentValues(sqlQuery: String): ContentValues {
         val contentValues = ContentValues()
 
         // Extracting table name
         val tableNameRegex = "(?<=UPDATE )\\w+".toRegex()
         val tableNameMatch = tableNameRegex.find(sqlQuery)
-        val tableName = tableNameMatch?.value ?: return null
+        val tableName = tableNameMatch?.value
 
         // Extracting SET clause
         val setClauseRegex = "(?<=SET ).+(?= WHERE)".toRegex()
         val setClauseMatch = setClauseRegex.find(sqlQuery)
-        val setClause = setClauseMatch?.value ?: return null
+        val setClause = setClauseMatch?.value
 
         // Extracting WHERE clause
         val whereClauseRegex = "(?<=WHERE ).+".toRegex()
         val whereClauseMatch = whereClauseRegex.find(sqlQuery)
-        val whereClause = whereClauseMatch?.value ?: return null
+        val whereClause = whereClauseMatch?.value
 
-        val keyValuePairs = setClause.split(", ")
-        for (keyValuePair in keyValuePairs) {
-            val splitPair = keyValuePair.split("=")
-            if (splitPair.size == 2) {
-                val key = splitPair[0].trim()
-                val value = splitPair[1].trim()
-                contentValues.put(key, value)
+        val keyValuePairs = setClause?.split(", ")
+        if (keyValuePairs != null) {
+            for (keyValuePair in keyValuePairs) {
+                val splitPair = keyValuePair.split("=")
+                if (splitPair.size == 2) {
+                    val key = splitPair[0].trim()
+                    val value = splitPair[1].trim()
+                    contentValues.put(key, value)
+                }
             }
         }
 
         // Extracting values from WHERE clause if needed
-        val whereValues = whereClause.split("=")
-        if (whereValues.size == 2) {
-            val key = whereValues[0].trim()
-            val value = whereValues[1].trim()
-            contentValues.put(key, value)
+        val whereValues = whereClause?.split("=")
+        if (whereValues != null) {
+            if (whereValues.size == 2) {
+                val key = whereValues[0].trim()
+                val value = whereValues[1].trim()
+                contentValues.put(key, value)
+            }
         }
 
         return contentValues
