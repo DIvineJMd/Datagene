@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hackthon_datallm_ai.Database.DatabaseHelper
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -63,7 +62,7 @@ class ChatViewModel (private val context: Context) : ViewModel() {
     private fun getResponse(prompt: String) {
         _livechat.value = Resource.Loading()
         viewModelScope.launch {
-                var modifiedPrompt = "prompt is "+prompt + ", now make sure Give me a query in this specific format if prompt is literally have all necessary attributes corresponding to table other wise dont give any output corresponding to insert, alter, delete, or update query: " +
+                var modifiedPrompt = "prompt is "+prompt + ", now make sure Give me a query in this specific format if prompt is literally have all necessary attributes and dont use "+'"'+" for any string in query corresponding to table other wise dont give any output corresponding to insert, alter, delete, or update query: " +
             "INSERT INTO <tablename> (key1, key2) VALUES (value1, value2)" +
             " or " +
             "UPDATE <tablename> SET key1 = value1, key2 = value2 WHERE condition" +
@@ -83,19 +82,18 @@ class ChatViewModel (private val context: Context) : ViewModel() {
             }
             else{
                 val dbHelper = DatabaseHelper(context)
-                val contentValues = dbHelper.convertSqlToContentValues("INSERT INTO hospital (patient, room, discharge) VALUES (John Doe, 101, 0)")
-                if (contentValues != null) {
-                    dbHelper.insertData("hospital", contentValues)
-                }
-                _livechat.value = Resource.Success(responseMessage.value)
-                _livechat.value = Resource.Stop()
-                _chatState.update {
-                    it.copy(
-                        chatList = it.chatList.toMutableList().apply {
-                            add(0, chat)
-                        }
-                    )
-                }
+                dbHelper.convertSqlToContentValues(chat.prompt,dbHelper,_database,_livechat,_chatState,chat)
+//                dbHelper.insertData("hospital", contentValues)
+
+//                _livechat.value = Resource.Success(responseMessage.value)
+//                _livechat.value = Resource.Stop()
+//                _chatState.update {
+//                    it.copy(
+//                        chatList = it.chatList.toMutableList().apply {
+//                            add(0, chat)
+//                        }
+//                    )
+//                }
             }
         }
     }

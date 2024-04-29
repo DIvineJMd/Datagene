@@ -171,16 +171,16 @@ class MainScreen {
                             .size(200.dp)
                     )
                 }
-                Button(onClick = {
-                    val dbHelper = DatabaseHelper(context)
-                    val contentValues = dbHelper.convertSqlToContentValues("INSERT INTO hospital (patient, room, discharge) VALUES (John Doe, 101, 0)")
-                    if (contentValues != null) {
-                        dbHelper.insertData("hospital", contentValues)
-                    }
-
-                }) {
-                    Text(text = "daal do")
-                }
+//                Button(onClick = {
+//                    val dbHelper = DatabaseHelper(context)
+//                    val contentValues = dbHelper.convertSqlToContentValues("INSERT INTO hospital (patient, room, discharge) VALUES (John Doe, 101, 0)")
+//                    if (contentValues != null) {
+//                        dbHelper.insertData("hospital", contentValues)
+//                    }
+//
+//                }) {
+//                    Text(text = "daal do")
+//                }
             }
         }
     }
