@@ -16,13 +16,6 @@ import kotlinx.coroutines.withContext
 
 class ViewModelChat(private val chatViewModel: ChatViewModel) : ViewModel() {
 
-    private var _database = ""
-    val database: String
-        get() = _database
-
-    fun setDatabase(database: String) {
-        _database = database
-    }
 
     val conversation: StateFlow<List<ChatUiModel.Message>>
         get() = _conversation

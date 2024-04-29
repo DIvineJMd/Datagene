@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
                             UIdatainput(applicationContext,navController).Databaseinput()
                         }
                         composable("main_screen"){
-                            MainScreen().MainUi(context = applicationContext,navController,viewModelChat)
+                            MainScreen().MainUi(context = applicationContext,navController,viewModelChat,chatViewModel)
                         }
                         composable("chat"){
                             ChatScreen(navController = navController, viewmodel = viewModelChat,chatViewModel)

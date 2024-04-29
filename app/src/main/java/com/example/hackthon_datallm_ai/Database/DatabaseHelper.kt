@@ -1,4 +1,5 @@
 package com.example.hackthon_datallm_ai.Database
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -85,6 +86,24 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         return tableNames
     }
+    @SuppressLint("Range")
+    fun getTableAttributes(tableName: String): List<Pair<String, String>> {
+        val db = readableDatabase
+        val attributes = mutableListOf<Pair<String, String>>()
+
+        // Query the PRAGMA table_info for column information
+        val cursor = db.rawQuery("PRAGMA table_info($tableName)", null)
+        cursor.use { cursor ->
+            while (cursor.moveToNext()) {
+                val columnName = cursor.getString(cursor.getColumnIndex("name"))
+                val columnType = cursor.getString(cursor.getColumnIndex("type"))
+                attributes.add(Pair(columnName, columnType))
+            }
+        }
+
+        return attributes
+    }
+
     fun queryData(tableName: String, projection: Array<String>?, selection: String?, selectionArgs: Array<String>?, sortOrder: String?): Cursor? {
         val db = readableDatabase
         return db.query(tableName, projection, selection, selectionArgs, null, null, sortOrder)
