@@ -103,6 +103,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 convertInsertToContentValues(sqlQuery)
             }
             "UPDATE" -> convertUpdateToContentValues(sqlQuery)
+//            "Delete" ->
             else -> null
         }
     }
