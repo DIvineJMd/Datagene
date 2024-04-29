@@ -61,6 +61,14 @@ class ChatViewModel : ViewModel() {
     private fun getResponse(prompt: String) {
         _livechat.value = Resource.Loading()
         viewModelScope.launch {
+                var modifiedPrompt = "prompt is "+prompt + ", now make sure Give me a query in this specific format if prompt is literally have all necessary attributes corresponding to table other wise dont give any output corresponding to insert, alter, delete, or update query: " +
+            "INSERT INTO <tablename> (key1, key2) VALUES (value1, value2)" +
+            " or " +
+            "UPDATE <tablename> SET key1 = value1, key2 = value2 WHERE condition" +
+            " or " +
+            "DELETE FROM <tablename> WHERE condition" +
+            " or " +
+            "ALTER TABLE <tablename> ADD COLUMN column_name datatype" + "here is the table attributes table name: ${}"
             val chat = ChatData.getResponse(prompt, isLoading, responseMessage)
             _livechat.value = Resource.Success(responseMessage.value)
             _livechat.value = Resource.Stop()
