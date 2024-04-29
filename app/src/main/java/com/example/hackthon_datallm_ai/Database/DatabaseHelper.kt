@@ -48,6 +48,40 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.execSQL(createTableQuery)
     }
 
+    fun getAllData(tableName: String): Cursor? {
+        val db = readableDatabase
+        return db.rawQuery("SELECT * FROM ${tableName}", null)
+    }
+    @SuppressLint("Range")
+    fun getDataFromCursor(cursor: Cursor?, attributes: List<Pair<String, String>>): List<String> {
+        val dataList = mutableListOf<String>()
+        cursor?.use { // Use the cursor in a safe block
+            val columnIndices = mutableMapOf<String, Int>()
+            // Map column names to their indices
+            for ((columnName, _) in attributes) {
+                columnIndices[columnName] = it.getColumnIndex(columnName)
+            }
+            while (it.moveToNext()) {
+                val rowData = StringBuilder()
+                // Construct the row data based on the attributes
+                for ((columnName, _) in attributes) {
+                    val columnIndex = columnIndices[columnName]
+                    if (columnIndex != null) {
+                        val columnValue = it.getString(columnIndex)
+                        rowData.append("$columnName: $columnValue, ")
+                    }
+                }
+                // Remove the trailing comma and space
+                if (rowData.isNotEmpty()) {
+                    rowData.deleteCharAt(rowData.length - 1)
+                    rowData.deleteCharAt(rowData.length - 1)
+                }
+                dataList.add(rowData.toString())
+            }
+        }
+        return dataList
+    }
+
 
 
 

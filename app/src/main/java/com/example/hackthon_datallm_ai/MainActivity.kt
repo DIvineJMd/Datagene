@@ -51,6 +51,9 @@ class MainActivity : ComponentActivity() {
                         composable("chat"){
                             ChatScreen(navController = navController, viewmodel = viewModelChat,chatViewModel)
                         }
+                        composable("datashow"){
+                            Showdatabase().Showdata(context = applicationContext, chatViewModel = chatViewModel,navController)
+                        }
                     }
                 }
             }

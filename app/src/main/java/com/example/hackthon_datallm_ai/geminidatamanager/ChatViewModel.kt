@@ -1,6 +1,7 @@
 package com.example.hackthon_datallm_ai.geminidatamanager
 
 import android.content.Context
+import android.database.Cursor
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,9 +20,13 @@ class ChatViewModel (private val context: Context) : ViewModel() {
     fun setattributes(attributes: List<Pair<String, String>>) {
         _attributes = attributes
     }
-
     fun setDatabase(database: String) {
         _database = database
+    }
+
+    fun getAllData(): Cursor? {
+
+        return DatabaseHelper(context).getAllData(_database)
     }
 
     private val _chatState = MutableStateFlow(ChatState())

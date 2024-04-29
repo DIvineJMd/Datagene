@@ -91,8 +91,8 @@ class UIdatainput( val context: Context,val navController: NavController) {
             var isDialogOpen by remember { mutableStateOf(false) }
             val Datatype =
                 arrayOf(
-                    "primaryKey",
                     "string",
+                    "primaryKey",
                     "number",
                     "boolean",
                     "map",
@@ -131,18 +131,18 @@ class UIdatainput( val context: Context,val navController: NavController) {
                             label = { Text("Document Name") }
                         )
 
-                        Row(horizontalArrangement = Arrangement.SpaceBetween) { // Input for Field Name
-
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) { // Input for Field Name
                             OutlinedTextField(
                                 modifier = Modifier
-                                    .requiredWidth(150.dp)
-                                    .padding(5.dp),
+                                    .weight(2f)
+                                    .padding(5.dp)
+                                  ,
                                 value = fieldName,
                                 onValueChange = { fieldName = it },
                                 label = { Text("Field Name") }
                             )
 
-                            Box(modifier = Modifier.padding(5.dp)) {
+                            Box(modifier = Modifier.weight(2f).padding(5.dp)) {
                                 ExposedDropdownMenuBox(
                                     expanded = expanded,
                                     onExpandedChange = {
@@ -151,8 +151,7 @@ class UIdatainput( val context: Context,val navController: NavController) {
                                 ) {
                                     OutlinedTextField(
                                         modifier = Modifier
-                                            .requiredWidth(170.dp)
-                                            .padding(5.dp)
+
                                             .menuAnchor(),
                                         value = selectedText,
                                         onValueChange = {},
@@ -162,8 +161,7 @@ class UIdatainput( val context: Context,val navController: NavController) {
                                                 expanded = expanded
                                             )
                                         },
-
-                                        )
+                                    )
 
                                     ExposedDropdownMenu(
                                         expanded = expanded,
@@ -185,6 +183,7 @@ class UIdatainput( val context: Context,val navController: NavController) {
                                 }
                             }
                         }
+
 
                         // Button to add field
                         Button(
