@@ -179,7 +179,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return contentValues
     }
 
-
     private fun convertUpdateToContentValues(sqlQuery: String): ContentValues? {
         val contentValues = ContentValues()
 
@@ -189,9 +188,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         val tableName = tableNameMatch?.value ?: return null
 
         // Extracting SET clause
-        val setClauseRegex = "(?<=SET ).+".toRegex()
+        val setClauseRegex = "(?<=SET ).+(?= WHERE)".toRegex()
         val setClauseMatch = setClauseRegex.find(sqlQuery)
         val setClause = setClauseMatch?.value ?: return null
+
+        // Extracting WHERE clause
+        val whereClauseRegex = "(?<=WHERE ).+".toRegex()
+        val whereClauseMatch = whereClauseRegex.find(sqlQuery)
+        val whereClause = whereClauseMatch?.value ?: return null
 
         val keyValuePairs = setClause.split(", ")
         for (keyValuePair in keyValuePairs) {
@@ -203,7 +207,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             }
         }
 
+        // Extracting values from WHERE clause if needed
+        val whereValues = whereClause.split("=")
+        if (whereValues.size == 2) {
+            val key = whereValues[0].trim()
+            val value = whereValues[1].trim()
+            contentValues.put(key, value)
+        }
+
         return contentValues
     }
-
 }
