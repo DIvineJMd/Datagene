@@ -67,18 +67,17 @@ class ChatViewModel (private val context: Context) : ViewModel() {
     private fun getResponse(prompt: String) {
         _livechat.value = Resource.Loading()
         viewModelScope.launch {
-            var modifiedPrompt = "prompt is "+prompt + ", now make sure Give me a query in this specific format if prompt is literally have all necessary attributes with there values and dont use "+'"'+" for any string in query corresponding to table other wise don't give any output FOR delete Query delete it from Table the category prompt has corresponding to insert, alter, delete, or update query: " +
+            var modifiedPrompt = "["+prompt +"]" +"now give me null if it has no meaning related to update , insert and delete query , if it has then give me query in format only "+
                     "INSERT INTO <tablename> (key1, key2) VALUES (value1, value2)" +
                     " or " +
                     "UPDATE <tablename> SET key1 = value1, key2 = value2 WHERE condition" +
                     " or " +
                     "DELETE FROM <tablename> WHERE condition" +
-                    " or " +
-                    "ALTER TABLE <tablename> ADD COLUMN column_name datatype" + "here is the table attributes table name: ${_database} attributes are ${_attributes.toString()}"
+                    " or  null" + "here is the table attributes table name: ${_database} tabel attributes: ${_attributes}"
             val chat = ChatData.getResponse(modifiedPrompt, isLoading, responseMessage)
             println(chat)
-            if(chat==null){
-                _livechat.value = Resource.Success("Retry!")
+            if(chat.prompt=="null" || chat.prompt=="Null" || chat.prompt=="NULL" ||chat.prompt=="'null'" || chat.prompt=="'Null'" || chat.prompt=="'NULL'"){
+                _livechat.value = Resource.Success("Retry! you can either ask to delete , insert or update noting else till now :)")
                 _livechat.value = Resource.Stop()
                 _chatState.update {
                     it.copy(
@@ -94,5 +93,4 @@ class ChatViewModel (private val context: Context) : ViewModel() {
             }
         }
     }
-
 }
