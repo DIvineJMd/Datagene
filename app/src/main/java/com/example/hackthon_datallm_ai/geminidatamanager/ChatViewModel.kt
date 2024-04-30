@@ -67,16 +67,19 @@ class ChatViewModel (private val context: Context) : ViewModel() {
     private fun getResponse(prompt: String) {
         _livechat.value = Resource.Loading()
         viewModelScope.launch {
-                var modifiedPrompt = "prompt is "+prompt + ", now make sure Give me a query in this specific format if prompt is literally have all necessary attributes and dont use "+'"'+" for any string in query corresponding to table other wise dont give any output corresponding to insert, alter, delete, or update query: " +
-            "INSERT INTO <tablename> (key1, key2) VALUES (value1, value2)" +
-            " or " +
-            "UPDATE <tablename> SET key1 = value1, key2 = value2 WHERE condition" +
-            " or " +
-            "DELETE FROM <tablename> WHERE condition" +
-            " or " +
-            "ALTER TABLE <tablename> ADD COLUMN column_name datatype" + "here is the table attributes table name: ${_database} attributes are ${_attributes.toString()}"
+            var modifiedPrompt = "prompt is "+prompt + ", now make sure Give me a query in this specific format if prompt is literally have all necessary attributes with there values and dont use "+'"'+" for any string in query corresponding to table other wise don't give any output FOR delete Query delete it from Table the category prompt has corresponding to insert, alter, delete, or update query: " +
+                    "INSERT INTO <tablename> (key1, key2) VALUES (value1, value2)" +
+                    " or " +
+                    "UPDATE <tablename> SET key1 = value1, key2 = value2 WHERE condition" +
+                    " or " +
+                    "DELETE FROM <tablename> WHERE condition" +
+                    " or " +
+                    "ALTER TABLE <tablename> ADD COLUMN column_name datatype" + "here is the table attributes table name: ${_database} attributes are ${_attributes.toString()}"
             val chat = ChatData.getResponse(modifiedPrompt, isLoading, responseMessage)
+            println(chat)
             if(chat==null){
+                _livechat.value = Resource.Success("Retry!")
+                _livechat.value = Resource.Stop()
                 _chatState.update {
                     it.copy(
                         chatList = it.chatList.toMutableList().apply {
@@ -88,17 +91,6 @@ class ChatViewModel (private val context: Context) : ViewModel() {
             else{
                 val dbHelper = DatabaseHelper(context)
                 dbHelper.convertSqlToContentValues(chat.prompt,dbHelper,_database,_livechat,_chatState,chat)
-//                dbHelper.insertData("hospital", contentValues)
-
-//                _livechat.value = Resource.Success(responseMessage.value)
-//                _livechat.value = Resource.Stop()
-//                _chatState.update {
-//                    it.copy(
-//                        chatList = it.chatList.toMutableList().apply {
-//                            add(0, chat)
-//                        }
-//                    )
-//                }
             }
         }
     }
