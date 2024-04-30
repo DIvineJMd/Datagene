@@ -163,7 +163,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         // Detecting the type of SQL operation (INSERT, UPDATE, DELETE)
         val operation = sqlQuery.substringBefore(" ").uppercase(Locale.ROOT)
         if(operation=="INSERT") {
-                contentValues=convertInsertToContentValues(sqlQuery)
+            contentValues=convertInsertToContentValues(sqlQuery)
             if(contentValues!=null){
                 dbHelper.insertData(_database,contentValues)
                 _livechat.value = Resource.Success("Data Inserted Successfully!")
@@ -181,18 +181,76 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 _livechat.value = Resource.Stop()
             }
         }
-        else if(operation=="UPDATE"){
-            var values = emptyList<String>()
-            var clause = emptyList<String>()
-            var args = emptyList<String>()
+        else if (operation == "UPDATE") {
+            contentValues = convertUpdateToContentValues(sqlQuery)
+            var Clause: String? = null
+            var Args = emptyArray<String>()
+            if (sqlQuery.contains("WHERE")) {
+                val whereClauseStartIndex = sqlQuery.indexOf("WHERE") + "WHERE".length
+                val whereClauseEndIndex = sqlQuery.length
+                val whereClause = sqlQuery.substring(whereClauseStartIndex, whereClauseEndIndex).trim()
 
-//            UPDATE student SET address = 'Earth-9907', age = 990 WHERE roll_no = 1;
-//            Table Name: student
-//                    Values: {'address': "'Earth-9907'", 'age': '990'}
-//            Where Clause: roll_no =
-//                    Where Args: ['1']
+                val conditions = whereClause.split("&&")
+                val argsList = mutableListOf<String>()
+                val clausesList = mutableListOf<String>()
+                for (condition in conditions) {
+                    val (key, arg) = condition.split("=").map { it.trim('\'', ' ') }
+                    argsList.add(arg)
+                    clausesList.add("$key=?")
+                }
 
-//            dbHelper.updateData()
+                if (argsList.isNotEmpty()) {
+                    Clause = clausesList.joinToString(" && ")
+                    Args = argsList.toTypedArray()
+                }
+            }
+            if (Clause != null) {
+                dbHelper.updateData(_database, contentValues, Clause, Args)
+                _livechat.value = Resource.Success("Data Updated Successfully!")
+                _livechat.value = Resource.Stop()
+                _chatState.update {
+                    it.copy(
+                        chatList = it.chatList.toMutableList().apply {
+                            add(0, chat)
+                        }
+                    )
+                }
+            }
+        }
+        else if (operation=="DELETE"){
+            var Clause: String? = null
+            var Args = emptyArray<String>()
+            if (sqlQuery.contains("WHERE")) {
+                val whereClauseStartIndex = sqlQuery.indexOf("WHERE") + "WHERE".length
+                val whereClauseEndIndex = sqlQuery.length
+                val whereClause = sqlQuery.substring(whereClauseStartIndex, whereClauseEndIndex).trim()
+
+                val conditions = whereClause.split("&&")
+                val argsList = mutableListOf<String>()
+                val clausesList = mutableListOf<String>()
+                for (condition in conditions) {
+                    val (key, arg) = condition.split("=").map { it.trim('\'', ' ') }
+                    argsList.add(arg)
+                    clausesList.add("$key=?")
+                }
+
+                if (argsList.isNotEmpty()) {
+                    Clause = clausesList.joinToString(" && ")
+                    Args = argsList.toTypedArray()
+                }
+            }
+            if (Clause != null) {
+                dbHelper.deleteData(_database,Clause, Args)
+                _livechat.value = Resource.Success("Data Deleted Successfully!")
+                _livechat.value = Resource.Stop()
+                _chatState.update {
+                    it.copy(
+                        chatList = it.chatList.toMutableList().apply {
+                            add(0, chat)
+                        }
+                    )
+                }
+            }
         }
     }
     private fun convertInsertToContentValues(sqlQuery: String): ContentValues {
@@ -264,24 +322,20 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             var value = valarr[index].trim('\'', '"')
             contentValues.put(key, value)
         }
-
         return contentValues
     }
 
     private fun convertUpdateToContentValues(sqlQuery: String): ContentValues {
         val contentValues = ContentValues()
 
-        // Extracting table name
         val tableNameRegex = "(?<=UPDATE )\\w+".toRegex()
         val tableNameMatch = tableNameRegex.find(sqlQuery)
         val tableName = tableNameMatch?.value
 
-        // Extracting SET clause
         val setClauseRegex = "(?<=SET ).+(?= WHERE)".toRegex()
         val setClauseMatch = setClauseRegex.find(sqlQuery)
         val setClause = setClauseMatch?.value
 
-        // Extracting WHERE clause
         val whereClauseRegex = "(?<=WHERE ).+".toRegex()
         val whereClauseMatch = whereClauseRegex.find(sqlQuery)
         val whereClause = whereClauseMatch?.value
@@ -291,23 +345,12 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             for (keyValuePair in keyValuePairs) {
                 val splitPair = keyValuePair.split("=")
                 if (splitPair.size == 2) {
-                    val key = splitPair[0].trim()
-                    val value = splitPair[1].trim()
+                    val key = splitPair[0].trim('\'', ' ')
+                    val value = splitPair[1].trim('\'', ' ')
                     contentValues.put(key, value)
                 }
             }
         }
-
-        // Extracting values from WHERE clause if needed
-        val whereValues = whereClause?.split("=")
-        if (whereValues != null) {
-            if (whereValues.size == 2) {
-                val key = whereValues[0].trim()
-                val value = whereValues[1].trim()
-                contentValues.put(key, value)
-            }
-        }
-
         return contentValues
     }
 }
