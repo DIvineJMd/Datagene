@@ -1,5 +1,6 @@
 package com.example.hackthon_datallm_ai.geminidatamanager
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
 import androidx.compose.runtime.mutableStateOf
@@ -8,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hackthon_datallm_ai.Database.DatabaseHelper
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -53,6 +55,28 @@ class ChatViewModel (private val context: Context) : ViewModel() {
         }
     }
 
+    fun searchInDatabase(input: String,   callback: (List<String>) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val suggestions = mutableListOf<String>()
+
+            getAllData()?.let {
+                // Retrieve data from cursor based on attributes
+                val dataList = DatabaseHelper(context).getDataFromCursor(
+                    it,
+                    _attributes
+                )
+
+                for (data in dataList) {
+                    if (data.contains(input, ignoreCase = true)) {
+                        suggestions.add(data)
+                    }
+                  }
+
+            }
+
+            callback(suggestions)
+        }
+    }
     private fun addPrompt(prompt: String) {
         _chatState.update {
             it.copy(

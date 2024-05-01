@@ -59,6 +59,8 @@ dependencies {
 //    // Add the dependency for the Firebase SDK for Google Analytics
 //    //noinspection UseTomlInstead
 //    implementation("com.google.firebase:firebase-analytics")
+    implementation ("io.coil-kt:coil-gif:2.0.0-rc02")
+    implementation ("io.coil-kt:coil-compose:2.2.2")
 
     implementation ("androidx.compose.runtime:runtime-livedata:1.6.6")
     implementation( "androidx.constraintlayout:constraintlayout-compose:1.0.1")

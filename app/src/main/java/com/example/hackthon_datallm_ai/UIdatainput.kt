@@ -21,6 +21,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -31,6 +33,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -64,6 +67,7 @@ class UIdatainput( val context: Context,val navController: NavController) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Localized description",
+                                tint=MaterialTheme.colorScheme.surface
                             )
                         }
                     },
@@ -72,6 +76,7 @@ class UIdatainput( val context: Context,val navController: NavController) {
                             Icon(
                                 imageVector = Icons.Filled.MoreVert,
                                 contentDescription = "Localized description",
+                                tint=MaterialTheme.colorScheme.surface
                             )
                         }
                     },
@@ -126,23 +131,35 @@ class UIdatainput( val context: Context,val navController: NavController) {
                     ) {
                         // Input for Document ID
                         OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                                cursorColor =MaterialTheme.colorScheme.onSecondary,
+                                focusedLabelColor = MaterialTheme.colorScheme.secondary
+                            ),
                             value = documentId,
                             onValueChange = { documentId = it },
                             label = { Text("Document Name") }
                         )
 
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) { // Input for Field Name
+                        Row( horizontalArrangement = Arrangement.spacedBy(10.dp)) { // Input for Field Name
                             OutlinedTextField(
                                 modifier = Modifier
-                                    .weight(2f)
-                                    .padding(5.dp)
+                                    .weight(40f)
                                   ,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                                    cursorColor =MaterialTheme.colorScheme.onSecondary,
+                                    focusedLabelColor = MaterialTheme.colorScheme.secondary
+                                ),
                                 value = fieldName,
                                 onValueChange = { fieldName = it },
                                 label = { Text("Field Name") }
                             )
 
-                            Box(modifier = Modifier.weight(2f).padding(5.dp)) {
+                            Row(modifier = Modifier
+                                .weight(41f)
+                                .padding(top = 7.5.dp)) {
                                 ExposedDropdownMenuBox(
                                     expanded = expanded,
                                     onExpandedChange = {
@@ -151,8 +168,12 @@ class UIdatainput( val context: Context,val navController: NavController) {
                                 ) {
                                     OutlinedTextField(
                                         modifier = Modifier
-
                                             .menuAnchor(),
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                                            cursorColor =MaterialTheme.colorScheme.onSecondary,
+                                            focusedLabelColor = MaterialTheme.colorScheme.secondary
+                                        ),
                                         value = selectedText,
                                         onValueChange = {},
                                         readOnly = true,
@@ -187,6 +208,10 @@ class UIdatainput( val context: Context,val navController: NavController) {
 
                         // Button to add field
                         Button(
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor=MaterialTheme.colorScheme.secondary,
+                                contentColor=MaterialTheme.colorScheme.primary
+                            ),
                             onClick = {
                                 if (fieldName.text.isNotEmpty() && documentId.text.isNotEmpty()) {
 
@@ -210,14 +235,20 @@ class UIdatainput( val context: Context,val navController: NavController) {
                         Column {
                             fields.forEach { (name, type) ->
                                 Text(
+
                                     "$name: $type",
-                                    style = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.primary)
+                                    style = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.primary),
+                                            color = MaterialTheme.colorScheme.secondary,
                                 )
                             }
                         }
 
                         // Button to submit data
                         Button(
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor=MaterialTheme.colorScheme.secondary,
+                                contentColor=MaterialTheme.colorScheme.primary
+                            ),
                             onClick = { isDialogOpen = true },
                             enabled = fields.isNotEmpty()
                         ) {
@@ -235,7 +266,7 @@ class UIdatainput( val context: Context,val navController: NavController) {
                                             .clip(
                                                 shape = RoundedCornerShape(25.dp)
                                             )
-                                            .background(MaterialTheme.colorScheme.background),
+                                            .background(MaterialTheme.colorScheme.surface),
                                         horizontalAlignment = Alignment.CenterHorizontally
 
                                     ) {
@@ -249,13 +280,17 @@ class UIdatainput( val context: Context,val navController: NavController) {
 
                                         ) {
                                             OutlinedButton(onClick = { isDialogOpen = false }) {
-                                                Text("Cancel")
+                                                Text("Cancel", color = MaterialTheme.colorScheme.onSecondary)
                                             }
                                             Button(
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor=MaterialTheme.colorScheme.secondary,
+                                                    contentColor=MaterialTheme.colorScheme.primary
+                                                ),
                                                 onClick = {
                                                     DatabaseHelper(context).createTable(documentId.text, fields)
                                                     isDialogOpen = false
-                                                    navController.popBackStack()
+                                                    navController.navigate("main_screen")
                                                 }
                                             ) {
                                                 Text("Confirm")

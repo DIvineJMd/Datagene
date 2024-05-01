@@ -1,5 +1,6 @@
 package com.example.hackthon_datallm_ai
 
+import Showdatabase
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,14 +12,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.hackthon_datallm_ai.Database.DatabaseHelper
 import com.example.hackthon_datallm_ai.Model.ViewModelChat
 import com.example.hackthon_datallm_ai.Model.ViewModelChatFactory
 import com.example.hackthon_datallm_ai.Model.ViewModelFactory
 import com.example.hackthon_datallm_ai.geminidatamanager.ChatViewModel
-import com.example.hackthon_datallm_ai.ui.theme.ChatScreen
 import com.example.hackthon_datallm_ai.ui.theme.Hackthon_DataLLM_AITheme
-import com.google.firebase.FirebaseApp
-import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,19 +39,22 @@ class MainActivity : ComponentActivity() {
                     // Set up navigation graph
                     NavHost(
                         navController = navController,
-                        startDestination = "main_screen"
-                    ) {
+                        startDestination = if (DatabaseHelper(applicationContext).getTableNames().isNotEmpty()) "main_screen" else "Start"                    ) {
+
                         composable("input") {
                             UIdatainput(applicationContext,navController).Databaseinput()
                         }
                         composable("main_screen"){
-                            MainScreen().MainUi(context = applicationContext,navController,viewModelChat,chatViewModel)
+                            MainScreen().MainUi(context = applicationContext,navController,chatViewModel)
                         }
                         composable("chat"){
                             ChatScreen(navController = navController, viewmodel = viewModelChat,chatViewModel)
                         }
                         composable("datashow"){
                             Showdatabase().Showdata(context = applicationContext, chatViewModel = chatViewModel,navController)
+                        }
+                        composable("Start"){
+                            StartScreen(navController)
                         }
                     }
                 }

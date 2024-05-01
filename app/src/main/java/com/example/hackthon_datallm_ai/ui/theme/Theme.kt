@@ -10,31 +10,40 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+private val LightColorScheme = lightColorScheme(
+    primary = Color(0xFFF9F9FA), // A tech blue
+    secondary = Color(0xFF004DBF), // A cyan accent
+    tertiary = Color(0xFFEB00FF), // A deep purple
+    background = Color(0xFFE3E3FF), // A light color for the background
+    surface = Color(0xFFC2D9FF), // A light grey for the surface
+    primaryContainer = Color(0xFF0062FE), // A lighter blue-grey for containers
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+    onTertiary = Color(0xFFFCDAFF),
+    onBackground = Color.Black,
+    onSurface = Color.Black,
+    onPrimaryContainer=Color.Black
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+private val DarkColorScheme = darkColorScheme(
+    primary = Color(0xFF1C1C24), // A tech blue
+    secondary = Color(0xFFFEEEEE), // A cyan accent
+    tertiary = Color(0xFF5E35B1), // A deep purple
+    background = Color(0xFF13131A), // A dark grey for the background
+    surface = Color(0xFF1C1C24), // A blue-grey for the surface
+    primaryContainer = Color(0xFF0062FE), // A lighter blue-grey for containers
     onPrimary = Color.White,
     onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    onTertiary = Color.Black,
+    onBackground = Color.White,
+    onSurface = Color.White,
+    onPrimaryContainer=Color.White
 )
 
 @Composable
@@ -45,11 +54,6 @@ fun Hackthon_DataLLM_AITheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
