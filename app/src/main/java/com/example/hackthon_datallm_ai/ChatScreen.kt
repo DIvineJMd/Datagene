@@ -256,6 +256,7 @@ fun ChatBox(
             shape = RoundedCornerShape(24.dp),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = MaterialTheme.colorScheme.surface,
+                focusedTextColor = MaterialTheme.colorScheme.onSecondary,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent
@@ -294,7 +295,7 @@ fun ChatBox(
 @Composable
 fun AnimatedLoadingGradient(
 ) {
-    val geminiPrimaryColor = MaterialTheme.colorScheme.primary
+    val geminiPrimaryColor = MaterialTheme.colorScheme.surface
     val geminiContainerColor = MaterialTheme.colorScheme.primaryContainer
 
     Column(

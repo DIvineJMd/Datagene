@@ -225,7 +225,7 @@ class Showdatabase {
                     ) {
                         item {
                             Surface(
-                                color = MaterialTheme.colorScheme.surface,
+                                color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier
                                     .padding(8.dp)
                                     .fillMaxWidth()
@@ -247,7 +247,8 @@ class Showdatabase {
                                                 .weight(2f)
                                                 .padding(horizontal = 4.dp),
                                             style = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp),
-                                            fontWeight = FontWeight.Bold
+                                            fontWeight = FontWeight.Bold,
+                                            color=MaterialTheme.colorScheme.onSurface
                                         )
                                     }
                                 }
@@ -265,7 +266,7 @@ class Showdatabase {
                         ) { rowData ->
                             Surface(
                                 modifier = Modifier.padding(8.dp),
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.surface,
                                 shadowElevation = 4.dp,
                                 tonalElevation = 5.dp
                             ) {

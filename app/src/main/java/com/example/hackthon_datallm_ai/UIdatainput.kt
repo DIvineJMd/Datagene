@@ -158,11 +158,13 @@ class UIdatainput(val context: Context, val navController: NavController) {
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
                                 cursorColor = MaterialTheme.colorScheme.onSecondary,
-                                focusedLabelColor = MaterialTheme.colorScheme.secondary
+                                focusedLabelColor = MaterialTheme.colorScheme.secondary,
+                                focusedTextColor = MaterialTheme.colorScheme.onSecondary,
+                                unfocusedTextColor =  MaterialTheme.colorScheme.onSecondary
                             ),
                             value = documentId,
                             onValueChange = { documentId = it },
-                            label = { Text("Document Name") }
+                            label = { Text("Document Name", color = MaterialTheme.colorScheme.onBackground) }
                         )
 
                         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) { // Input for Field Name
@@ -172,11 +174,13 @@ class UIdatainput(val context: Context, val navController: NavController) {
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
                                     cursorColor = MaterialTheme.colorScheme.onSecondary,
-                                    focusedLabelColor = MaterialTheme.colorScheme.secondary
+                                    focusedLabelColor = MaterialTheme.colorScheme.secondary,
+                                    focusedTextColor = MaterialTheme.colorScheme.onSecondary,
+                                    unfocusedTextColor =  MaterialTheme.colorScheme.onSecondary
                                 ),
                                 value = fieldName,
                                 onValueChange = { fieldName = it },
-                                label = { Text("Field Name") }
+                                label = { Text("Field Name", color = MaterialTheme.colorScheme.onBackground) }
                             )
 
                             Row(
@@ -196,7 +200,9 @@ class UIdatainput(val context: Context, val navController: NavController) {
                                         colors = OutlinedTextFieldDefaults.colors(
                                             focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
                                             cursorColor = MaterialTheme.colorScheme.onSecondary,
-                                            focusedLabelColor = MaterialTheme.colorScheme.secondary
+                                            focusedLabelColor = MaterialTheme.colorScheme.secondary,
+                                            focusedTextColor = MaterialTheme.colorScheme.onSecondary,
+                                            unfocusedTextColor =  MaterialTheme.colorScheme.onSecondary
                                         ),
                                         value = selectedText,
                                         onValueChange = {},
@@ -215,7 +221,7 @@ class UIdatainput(val context: Context, val navController: NavController) {
                                     ) {
                                         Datatype.forEach { item ->
                                             DropdownMenuItem(
-                                                text = { Text(text = item) },
+                                                text = { Text(text = item, color = MaterialTheme.colorScheme.onBackground) },
                                                 onClick = {
 
                                                     selectedText = item
@@ -235,6 +241,8 @@ class UIdatainput(val context: Context, val navController: NavController) {
                             Button(
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.secondary,
+                                    disabledContainerColor = MaterialTheme.colorScheme.surface,
+                                    disabledContentColor = MaterialTheme.colorScheme.onTertiary,
                                     contentColor = MaterialTheme.colorScheme.primary
                                 ),
                                 onClick = {
@@ -265,7 +273,7 @@ class UIdatainput(val context: Context, val navController: NavController) {
                                 }
                             }) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.download),
+                                    painter = painterResource(id = R.drawable.adddata),
                                     contentDescription = "",
                                     modifier = Modifier.size(30.dp)
                                 )
@@ -287,6 +295,8 @@ class UIdatainput(val context: Context, val navController: NavController) {
                         Button(
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.secondary,
+                                disabledContainerColor = MaterialTheme.colorScheme.surface,
+                                disabledContentColor = MaterialTheme.colorScheme.onTertiary,
                                 contentColor = MaterialTheme.colorScheme.primary
                             ),
                             onClick = { isDialogOpen = true },
