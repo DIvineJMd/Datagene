@@ -201,7 +201,9 @@ class Showdatabase {
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
                                 cursorColor = MaterialTheme.colorScheme.onSecondary,
-                                focusedLabelColor = MaterialTheme.colorScheme.secondary
+                                focusedLabelColor = MaterialTheme.colorScheme.secondary,
+                                focusedTextColor = MaterialTheme.colorScheme.onSecondary,
+                                unfocusedTextColor =  MaterialTheme.colorScheme.onSecondary
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
