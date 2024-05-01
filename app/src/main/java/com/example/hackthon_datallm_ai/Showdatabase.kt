@@ -1,5 +1,11 @@
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.os.Environment
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,6 +61,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.hackthon_datallm_ai.R
 import java.awt.font.NumericShaper.Range
+import java.io.File
+import com.opencsv.CSVWriter
+import java.io.FileWriter
+import java.io.IOException
 
 class Showdatabase {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -67,7 +77,51 @@ class Showdatabase {
             mutableStateOf(false)
         }
         val keyboardController = LocalSoftwareKeyboardController.current
+        val exportLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val uri = result.data?.data
+                uri?.let { uri ->
+                    try {
+                        context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                            // Create CSV file
+                            val writer = CSVWriter(outputStream.writer())
 
+                            // Write header row
+                            val attributes =
+                                chatViewModel._attributes.map { it.first }.toTypedArray()
+                            writer.writeNext(attributes)
+
+                            // Write data rows
+                            val data = DatabaseHelper(context).getDataFromCursor(
+                                chatViewModel.getAllData(),
+                                chatViewModel._attributes
+                            )
+                            data.forEach { rowData ->
+                                val values =
+                                    rowData.split(", ").map { it.split(": ")[1] }.toTypedArray()
+                                writer.writeNext(values)
+                            }
+
+                            // Close writer
+                            writer.close()
+
+                            // Show success message
+                            Toast.makeText(context, "Data saved", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        Toast.makeText(
+                            context,
+                            "Error exporting database $e",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
         val focusManager = LocalFocusManager.current
         Scaffold(
             floatingActionButton = {
@@ -82,13 +136,21 @@ class Showdatabase {
             topBar = {
                 CenterAlignedTopAppBar(
                     actions = {
-                        IconButton(onClick = { }) {
+                        IconButton(onClick = {
+                            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                                addCategory(Intent.CATEGORY_OPENABLE)
+                                type = "text/csv"
+                                putExtra(Intent.EXTRA_TITLE, "database.csv")
+                            }
+                            exportLauncher.launch(intent)
+                        }) {
                             Image(
                                 painter = painterResource(id = R.drawable.upload),
                                 contentDescription = "",
                                 modifier = Modifier.size(25.dp),
                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.background)
-                            )                        }
+                            )
+                        }
                     },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
@@ -138,7 +200,7 @@ class Showdatabase {
                             label = { Text("Search") },
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
-                                cursorColor =MaterialTheme.colorScheme.onSecondary,
+                                cursorColor = MaterialTheme.colorScheme.onSecondary,
                                 focusedLabelColor = MaterialTheme.colorScheme.secondary
                             ),
                             modifier = Modifier
@@ -148,12 +210,13 @@ class Showdatabase {
                                 imeAction = ImeAction.Done,
 //                                imeAction= ImeAction.Previous
                             ),
-                            keyboardActions = KeyboardActions(onDone = {
+                            keyboardActions = KeyboardActions(
+                                onDone = {
 
-                                keyboardController?.hide()
-                                focusManager.clearFocus(force = true)
-                            },
-                             ),
+                                    keyboardController?.hide()
+                                    focusManager.clearFocus(force = true)
+                                },
+                            ),
                         )
 
                     }
@@ -162,7 +225,7 @@ class Showdatabase {
                     ) {
                         item {
                             Surface(
-                                color=MaterialTheme.colorScheme.surface,
+                                color = MaterialTheme.colorScheme.surface,
                                 modifier = Modifier
                                     .padding(8.dp)
                                     .fillMaxWidth()
@@ -191,18 +254,18 @@ class Showdatabase {
                             }
                         }
                         items(
-                            if(!isDropdownExpanded){
+                            if (!isDropdownExpanded) {
                                 DatabaseHelper(context).getDataFromCursor(
                                     cursor,
                                     chatViewModel._attributes
                                 )
-                            }else{
+                            } else {
                                 suggest
                             }
                         ) { rowData ->
                             Surface(
                                 modifier = Modifier.padding(8.dp),
-                                color=MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.primary,
                                 shadowElevation = 4.dp,
                                 tonalElevation = 5.dp
                             ) {
@@ -218,7 +281,7 @@ class Showdatabase {
                                         Text(
                                             text = value.trim(),
 
-                                            color=MaterialTheme.colorScheme.onSecondary,
+                                            color = MaterialTheme.colorScheme.onSecondary,
                                             modifier = Modifier
                                                 .weight(1f)
                                                 .padding(horizontal = 4.dp)
@@ -234,4 +297,6 @@ class Showdatabase {
             }
         }
     }
+
+
 }

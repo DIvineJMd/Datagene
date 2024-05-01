@@ -1,8 +1,12 @@
 package com.example.hackthon_datallm_ai
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -56,8 +60,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.example.hackthon_datallm_ai.Database.DatabaseHelper
+import com.opencsv.CSVParser
+import org.apache.commons.csv.CSVFormat
+import java.io.InputStreamReader
 
-class UIdatainput( val context: Context,val navController: NavController) {
+class UIdatainput(val context: Context, val navController: NavController) {
     @OptIn(ExperimentalMaterial3Api::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "MutableCollectionMutableState")
     @Composable
@@ -66,6 +73,13 @@ class UIdatainput( val context: Context,val navController: NavController) {
         var fieldName by remember { mutableStateOf(TextFieldValue()) }
         val fields = remember { mutableStateOf(mutableListOf<Pair<String, String>>()) }
         var isDialogOpen by remember { mutableStateOf(false) }
+        val filePickerLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent()
+        ) { uri ->
+            if (uri != null) {
+                readCsvFromUri(context, uri, tableName = documentId.text,navController)
+            }
+        }
         Scaffold(
 
             topBar = {
@@ -75,7 +89,7 @@ class UIdatainput( val context: Context,val navController: NavController) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Localized description",
-                                tint=MaterialTheme.colorScheme.surface
+                                tint = MaterialTheme.colorScheme.surface
                             )
                         }
                     },
@@ -143,7 +157,7 @@ class UIdatainput( val context: Context,val navController: NavController) {
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
-                                cursorColor =MaterialTheme.colorScheme.onSecondary,
+                                cursorColor = MaterialTheme.colorScheme.onSecondary,
                                 focusedLabelColor = MaterialTheme.colorScheme.secondary
                             ),
                             value = documentId,
@@ -151,14 +165,13 @@ class UIdatainput( val context: Context,val navController: NavController) {
                             label = { Text("Document Name") }
                         )
 
-                        Row( horizontalArrangement = Arrangement.spacedBy(10.dp)) { // Input for Field Name
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) { // Input for Field Name
                             OutlinedTextField(
                                 modifier = Modifier
-                                    .weight(40f)
-                                  ,
+                                    .weight(40f),
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
-                                    cursorColor =MaterialTheme.colorScheme.onSecondary,
+                                    cursorColor = MaterialTheme.colorScheme.onSecondary,
                                     focusedLabelColor = MaterialTheme.colorScheme.secondary
                                 ),
                                 value = fieldName,
@@ -166,9 +179,11 @@ class UIdatainput( val context: Context,val navController: NavController) {
                                 label = { Text("Field Name") }
                             )
 
-                            Row(modifier = Modifier
-                                .weight(41f)
-                                .padding(top = 7.5.dp)) {
+                            Row(
+                                modifier = Modifier
+                                    .weight(41f)
+                                    .padding(top = 7.5.dp)
+                            ) {
                                 ExposedDropdownMenuBox(
                                     expanded = expanded,
                                     onExpandedChange = {
@@ -180,7 +195,7 @@ class UIdatainput( val context: Context,val navController: NavController) {
                                             .menuAnchor(),
                                         colors = OutlinedTextFieldDefaults.colors(
                                             focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
-                                            cursorColor =MaterialTheme.colorScheme.onSecondary,
+                                            cursorColor = MaterialTheme.colorScheme.onSecondary,
                                             focusedLabelColor = MaterialTheme.colorScheme.secondary
                                         ),
                                         value = selectedText,
@@ -216,29 +231,46 @@ class UIdatainput( val context: Context,val navController: NavController) {
 
 
                         // Button to add field
-                        Button(
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor=MaterialTheme.colorScheme.secondary,
-                                contentColor=MaterialTheme.colorScheme.primary
-                            ),
-                            onClick = {
-                                if (fieldName.text.isNotEmpty() && documentId.text.isNotEmpty()) {
+                        Row {
+                            Button(
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.secondary,
+                                    contentColor = MaterialTheme.colorScheme.primary
+                                ),
+                                onClick = {
+                                    if (fieldName.text.isNotEmpty() && documentId.text.isNotEmpty()) {
 
-                                    if (!selectedText.equals("primaryKey") || !isPrimaryKeyAdded) {
-                                        if(selectedText.equals("primaryKey")){
-                                            showToast("Added Primary key")
-                                            isPrimaryKeyAdded=true
+                                        if (!selectedText.equals("primaryKey") || !isPrimaryKeyAdded) {
+                                            if (selectedText.equals("primaryKey")) {
+                                                showToast("Added Primary key")
+                                                isPrimaryKeyAdded = true
+                                            }
+                                            fields.value.add(fieldName.text to selectedText)
+                                            fieldName = TextFieldValue()
+                                        } else {
+                                            showToast("Primary key already added")
                                         }
-                                        fields.value.add(fieldName.text to selectedText)
-                                        fieldName = TextFieldValue()
-                                    } else {
-                                        showToast("Primary key already added")
                                     }
+                                },
+                                enabled = fieldName.text.isNotEmpty() && documentId.text.isNotEmpty()
+                            ) {
+                                Text("Add Field", color = MaterialTheme.colorScheme.background)
+                            }
+                            Text(text = "Or", Modifier.padding(10.dp))
+                            IconButton(onClick = {
+                                if (documentId.text.isNotEmpty()) {
+                                    filePickerLauncher.launch("*/*")
+                                } else {
+                                    showToast("Insert Document id")
                                 }
-                            },
-                            enabled = fieldName.text.isNotEmpty() && documentId.text.isNotEmpty()
-                        ) {
-                            Text("Add Field", color = MaterialTheme.colorScheme.background)
+                            }) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.download),
+                                    contentDescription = "",
+                                    modifier = Modifier.size(30.dp)
+                                )
+
+                            }
                         }
                         // Display added fields
                         Column {
@@ -247,16 +279,15 @@ class UIdatainput( val context: Context,val navController: NavController) {
 
                                     "$name: $type",
                                     style = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.primary),
-                                            color = MaterialTheme.colorScheme.secondary,
+                                    color = MaterialTheme.colorScheme.secondary,
                                 )
                             }
                         }
-
                         // Button to submit data
                         Button(
                             colors = ButtonDefaults.buttonColors(
-                                containerColor=MaterialTheme.colorScheme.secondary,
-                                contentColor=MaterialTheme.colorScheme.primary
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.primary
                             ),
                             onClick = { isDialogOpen = true },
                             enabled = fields.value.isNotEmpty()
@@ -289,19 +320,28 @@ class UIdatainput( val context: Context,val navController: NavController) {
 
                                         ) {
                                             OutlinedButton(onClick = { isDialogOpen = false }) {
-                                                Text("Cancel", color = MaterialTheme.colorScheme.onSecondary)
+                                                Text(
+                                                    "Cancel",
+                                                    color = MaterialTheme.colorScheme.onSecondary
+                                                )
                                             }
                                             Button(
                                                 colors = ButtonDefaults.buttonColors(
-                                                    containerColor=MaterialTheme.colorScheme.secondary,
+                                                    containerColor = MaterialTheme.colorScheme.secondary,
                                                 ),
                                                 onClick = {
-                                                    DatabaseHelper(context).createTable(documentId.text, fields.value)
+                                                    DatabaseHelper(context).createTable(
+                                                        documentId.text,
+                                                        fields.value
+                                                    )
                                                     isDialogOpen = false
                                                     navController.navigate("main_screen")
                                                 }
                                             ) {
-                                                Text("Confirm", color = MaterialTheme.colorScheme.background)
+                                                Text(
+                                                    "Confirm",
+                                                    color = MaterialTheme.colorScheme.background
+                                                )
                                             }
                                         }
                                     }
@@ -314,7 +354,71 @@ class UIdatainput( val context: Context,val navController: NavController) {
             }
         }
     }
-    private fun showToast( message: String) {
+
+    fun readCsvFromUri(context: Context, uri: Uri, tableName: String,navController: NavController) {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        inputStream?.use { stream ->
+            val reader = InputStreamReader(stream)
+            val csvParser = org.apache.commons.csv.CSVParser(reader, CSVFormat.DEFAULT)
+
+            var isFirstLine = true
+            var fieldNames: List<String>? = null
+            val csvDataMap = mutableMapOf<String, MutableList<Any>>()
+
+            for (record in csvParser) {
+                if (isFirstLine) {
+                    isFirstLine = false
+                    fieldNames = record.toList()
+                    // Initialize lists for each column name
+                    fieldNames?.forEach { columnName ->
+                        csvDataMap[columnName] = mutableListOf()
+                    }
+                    // Infer column data types
+                    val columnDefinitions = inferColumnDataTypes(csvDataMap)
+                    // Create table based on inferred column definitions
+                    DatabaseHelper(context).createTable(tableName, columnDefinitions)
+                    continue
+                }
+
+                val contentValues = ContentValues()
+                if (fieldNames != null) {
+                    // Process each field according to its field name
+                    fieldNames.forEachIndexed { index, columnName ->
+                        val fieldValue = record.get(index)
+                        if (fieldValue != null) {
+                            // Add data to ContentValues
+                            contentValues.put("\"$columnName\"", fieldValue.toString())
+                            csvDataMap[columnName]?.add(fieldValue)
+                        }
+                    }
+                }
+                // Insert row into database
+                DatabaseHelper(context).insertData(tableName, contentValues)
+            }
+
+            csvParser.close()
+            navController.navigate("main_screen")
+        }
+    }
+
+
+    private fun inferColumnDataTypes(csvDataMap: Map<String, List<Any>>): MutableList<Pair<String, String>> {
+        val columnDefinitions = mutableListOf<Pair<String, String>>()
+        csvDataMap.forEach { (columnName, values) ->
+            val dataType = inferDataType(values)
+            columnDefinitions.add(columnName to dataType)
+        }
+        return columnDefinitions
+    }
+
+    private fun inferDataType(values: List<Any>): String {
+        // Infer data type based on values
+        // You can implement your logic here to determine the data type
+        // For simplicity, let's assume all values are of type "TEXT"
+        return "string"
+    }
+
+    private fun showToast(message: String) {
         // Use application context to show toast
         Toast.makeText(
             context,
@@ -322,7 +426,7 @@ class UIdatainput( val context: Context,val navController: NavController) {
             Toast.LENGTH_SHORT
         ).show()
     }
-    }
+}
 
 
 

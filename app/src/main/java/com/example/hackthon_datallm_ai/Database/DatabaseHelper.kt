@@ -39,10 +39,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 "array" -> "TEXT"
                 "null" -> "NULL"
                 "timestamp" -> "INTEGER"
-                "primaryKey" -> "$columnName Char (25) PRIMARY KEY"
+                "primaryKey" -> "\"$columnName\" Char (25) PRIMARY KEY"
                 else -> throw IllegalArgumentException("Unsupported data type: $dataType")
             }
-            "$columnName $sqlDataType"
+            "\"$columnName\" $sqlDataType"
         }
         val createTableQuery = "CREATE TABLE IF NOT EXISTS $tableName ($columns)"
         db.execSQL(createTableQuery)

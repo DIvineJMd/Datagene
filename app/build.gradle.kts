@@ -61,7 +61,8 @@ dependencies {
 //    implementation("com.google.firebase:firebase-analytics")
     implementation ("io.coil-kt:coil-gif:2.0.0-rc02")
     implementation ("io.coil-kt:coil-compose:2.2.2")
-
+    implementation ("com.opencsv:opencsv:5.9")
+    implementation ("org.apache.commons:commons-csv:1.10.0")
     implementation ("androidx.compose.runtime:runtime-livedata:1.6.6")
     implementation( "androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation("com.google.ai.client.generativeai:generativeai:0.1.2")
