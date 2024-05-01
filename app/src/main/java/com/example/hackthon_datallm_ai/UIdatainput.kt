@@ -3,6 +3,7 @@ package com.example.hackthon_datallm_ai
 import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,6 +49,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -58,6 +62,10 @@ class UIdatainput( val context: Context,val navController: NavController) {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "MutableCollectionMutableState")
     @Composable
     fun Databaseinput() {
+        var documentId by remember { mutableStateOf(TextFieldValue()) }
+        var fieldName by remember { mutableStateOf(TextFieldValue()) }
+        val fields = remember { mutableStateOf(mutableListOf<Pair<String, String>>()) }
+        var isDialogOpen by remember { mutableStateOf(false) }
         Scaffold(
 
             topBar = {
@@ -72,28 +80,29 @@ class UIdatainput( val context: Context,val navController: NavController) {
                         }
                     },
                     actions = {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(
-                                imageVector = Icons.Filled.MoreVert,
-                                contentDescription = "Localized description",
-                                tint=MaterialTheme.colorScheme.surface
-                            )
+                        IconButton(onClick = { fields.value.removeLast() }) {
+                            if (fields.value.isNotEmpty()) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.undo),
+                                    contentDescription = "",
+                                    modifier = Modifier.size(25.dp),
+                                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.background)
+                                )
+                            }
                         }
+
                     },
                     colors = topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         titleContentColor = MaterialTheme.colorScheme.primary,
                     ),
                     title = {
-                        Text("Add Document")
+                        Text("Add Document", color = MaterialTheme.colorScheme.background)
                     }
                 )
             }
         ) {
-            var documentId by remember { mutableStateOf(TextFieldValue()) }
-            var fieldName by remember { mutableStateOf(TextFieldValue()) }
-            var fields by remember { mutableStateOf(mutableListOf<Pair<String, String>>()) }
-            var isDialogOpen by remember { mutableStateOf(false) }
+
             val Datatype =
                 arrayOf(
                     "string",
@@ -220,7 +229,7 @@ class UIdatainput( val context: Context,val navController: NavController) {
                                             showToast("Added Primary key")
                                             isPrimaryKeyAdded=true
                                         }
-                                        fields.add(fieldName.text to selectedText)
+                                        fields.value.add(fieldName.text to selectedText)
                                         fieldName = TextFieldValue()
                                     } else {
                                         showToast("Primary key already added")
@@ -229,11 +238,11 @@ class UIdatainput( val context: Context,val navController: NavController) {
                             },
                             enabled = fieldName.text.isNotEmpty() && documentId.text.isNotEmpty()
                         ) {
-                            Text("Add Field")
+                            Text("Add Field", color = MaterialTheme.colorScheme.background)
                         }
                         // Display added fields
                         Column {
-                            fields.forEach { (name, type) ->
+                            fields.value.forEach { (name, type) ->
                                 Text(
 
                                     "$name: $type",
@@ -250,9 +259,9 @@ class UIdatainput( val context: Context,val navController: NavController) {
                                 contentColor=MaterialTheme.colorScheme.primary
                             ),
                             onClick = { isDialogOpen = true },
-                            enabled = fields.isNotEmpty()
+                            enabled = fields.value.isNotEmpty()
                         ) {
-                            Text("Submit")
+                            Text("Submit", color = MaterialTheme.colorScheme.background)
                         }
 
                         Column(modifier = Modifier) { // Dialog for confirmation
@@ -285,15 +294,14 @@ class UIdatainput( val context: Context,val navController: NavController) {
                                             Button(
                                                 colors = ButtonDefaults.buttonColors(
                                                     containerColor=MaterialTheme.colorScheme.secondary,
-                                                    contentColor=MaterialTheme.colorScheme.primary
                                                 ),
                                                 onClick = {
-                                                    DatabaseHelper(context).createTable(documentId.text, fields)
+                                                    DatabaseHelper(context).createTable(documentId.text, fields.value)
                                                     isDialogOpen = false
                                                     navController.navigate("main_screen")
                                                 }
                                             ) {
-                                                Text("Confirm")
+                                                Text("Confirm", color = MaterialTheme.colorScheme.background)
                                             }
                                         }
                                     }

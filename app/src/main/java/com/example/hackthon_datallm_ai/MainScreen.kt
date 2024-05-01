@@ -130,7 +130,7 @@ class MainScreen {
                         titleContentColor = MaterialTheme.colorScheme.primary,
                     ),
                     title = {
-                        Text("DataGenie")
+                        Text("DataGenie", color = MaterialTheme.colorScheme.background)
                     }
                 )
             }

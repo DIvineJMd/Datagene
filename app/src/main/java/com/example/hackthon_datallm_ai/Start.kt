@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedButton
@@ -49,7 +51,8 @@ fun StartScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
+            .padding(20.dp)
+            .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         // Header
@@ -98,6 +101,9 @@ fun StartScreen(navController: NavController) {
 
         // Button
         ElevatedButton(
+            colors = ButtonDefaults.buttonColors(
+                containerColor=MaterialTheme.colorScheme.secondary,
+            ),
             onClick = { navController.navigate("input") },
             modifier = Modifier
                 .fillMaxWidth()
@@ -106,7 +112,8 @@ fun StartScreen(navController: NavController) {
             Text(
                 text = "Get Started",
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.background
             )
         }
     }

@@ -1,5 +1,6 @@
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.foundation.Image
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -44,11 +46,15 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.hackthon_datallm_ai.R
+import java.awt.font.NumericShaper.Range
 
 class Showdatabase {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -77,12 +83,12 @@ class Showdatabase {
                 CenterAlignedTopAppBar(
                     actions = {
                         IconButton(onClick = { }) {
-                            Icon(
-                                imageVector = Icons.Filled.MoreVert,
-                                tint = MaterialTheme.colorScheme.surface,
-                                contentDescription = "Localized description",
-                            )
-                        }
+                            Image(
+                                painter = painterResource(id = R.drawable.upload),
+                                contentDescription = "",
+                                modifier = Modifier.size(25.dp),
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.background)
+                            )                        }
                     },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
@@ -98,7 +104,7 @@ class Showdatabase {
                         titleContentColor = MaterialTheme.colorScheme.primary,
                     ),
                     title = {
-                        Text("DataGenie 📊")
+                        Text("DataGenie 📊", color = MaterialTheme.colorScheme.background)
                     }
                 )
             }
@@ -109,12 +115,15 @@ class Showdatabase {
             if (cursor != null) {
                 val attributes = chatViewModel._attributes.map { it.first }
 
-                Column(Modifier.padding(it).pointerInput(Unit){
-                   detectTapGestures(onTap = {
-                       keyboardController?.hide()
-                       focusManager.clearFocus(force = true)
-                   })
-                }) {
+                Column(
+                    Modifier
+                        .padding(it)
+                        .pointerInput(Unit) {
+                            detectTapGestures(onTap = {
+                                keyboardController?.hide()
+                                focusManager.clearFocus(force = true)
+                            })
+                        }) {
                     Column(Modifier.padding(8.dp)) {
                         OutlinedTextField(
                             value = search,

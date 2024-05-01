@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFFF9F9FA), // A tech blue
+    primary = Color(0xFF0062FE), // A tech blue
     secondary = Color(0xFF004DBF), // A cyan accent
     tertiary = Color(0xFFEB00FF), // A deep purple
     background = Color(0xFFE3E3FF), // A light color for the background
