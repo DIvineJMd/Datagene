@@ -38,7 +38,9 @@ This is a Kotlin application built using Jetpack Compose for managing databases 
 - Gemini Chat SDK
 - SQLite Database
 
-## Contributing
+## Contributors
 
-Contributions are welcome! If you have any ideas for improvements or find any issues, please open an issue or submit a pull request.
-
+1. Aanchal Gupta
+2. Adarsh
+3. Param Kumar Raman
+4. Yogender Kumar
