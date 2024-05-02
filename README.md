@@ -31,9 +31,11 @@ This is a Kotlin application built using Jetpack Compose for managing databases 
 
 4. Use the import/export functionality to manage data using CSV files.
 
-5. User Flow: https://www.figma.com/file/dmaKKTL14quEPbN0OA3ANE/User_flow_DataGene?type=whiteboard&node-id=875%3A1085&t=3zytU31Vbdl6dq5u-1
+5. Install APP (.apk file): https://github.com/DIvineJMd/Datagene/releases/download/DataGene/DataGene.apk
 
-6. Demo Link: https://youtu.be/I9EBJWtTn1s
+6. User Flow: https://www.figma.com/file/dmaKKTL14quEPbN0OA3ANE/User_flow_DataGene?type=whiteboard&node-id=875%3A1085&t=3zytU31Vbdl6dq5u-1
+
+7. Demo Link: https://youtu.be/I9EBJWtTn1s
 
 
 ## Dependencies
