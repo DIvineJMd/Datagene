@@ -15,4 +15,30 @@ This is a Kotlin application built using Jetpack Compose for managing databases 
 ## Installation
 
 1. Clone the repository:
+`https://github.com/Yogender21505/Datagene.git`
+
+2. Open the project in Android Studio.
+
+3. Build and run the application on your device or emulator.
+
+## Usage
+
+1. Upon launching the application, create a new database by providing a name and defining attributes.
+
+2. Navigate to the created database and start adding data to the tables.
+
+3. Interact with the Gemini chat integration to perform data management tasks.
+
+4. Use the import/export functionality to manage data using CSV files.
+
+## Dependencies
+
+- Kotlin
+- Jetpack Compose
+- Gemini Chat SDK
+- SQLite Database
+
+## Contributing
+
+Contributions are welcome! If you have any ideas for improvements or find any issues, please open an issue or submit a pull request.
 
