@@ -31,6 +31,9 @@ This is a Kotlin application built using Jetpack Compose for managing databases 
 
 4. Use the import/export functionality to manage data using CSV files.
 
+5. Demo Link: https://youtu.be/I9EBJWtTn1s
+
+
 ## Dependencies
 
 - Kotlin
