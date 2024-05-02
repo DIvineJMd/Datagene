@@ -31,7 +31,9 @@ This is a Kotlin application built using Jetpack Compose for managing databases 
 
 4. Use the import/export functionality to manage data using CSV files.
 
-5. Demo Link: https://youtu.be/I9EBJWtTn1s
+5. User Flow: https://www.figma.com/file/dmaKKTL14quEPbN0OA3ANE/User_flow_DataGene?type=whiteboard&node-id=875%3A1085&t=3zytU31Vbdl6dq5u-1
+
+6. Demo Link: https://youtu.be/I9EBJWtTn1s
 
 
 ## Dependencies
