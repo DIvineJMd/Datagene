@@ -1,4 +1,4 @@
-# Kotlin Jetpack Compose Database Management Application
+# Database Management Application: DataGene-Your Complete Data Solution
 
 This is a Kotlin application built using Jetpack Compose for managing databases dynamically. It allows users to create multiple databases, define dynamic attributes for each database, create tables based on the defined attributes, and perform CRUD (Create, Read, Update, Delete) operations on the data.
 
